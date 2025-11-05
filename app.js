@@ -59,6 +59,7 @@ function setup(shaders, sceneGraph) {
                 {
                     name: name + "_model",
                     primitive: "TORUS",
+                    "color": [0.1, 0.1, 0.1, 1.0],
                     transform: {
                         translation: [0, 0, 0],
                         rotation: [0, 0, 0],
@@ -99,9 +100,16 @@ function setup(shaders, sceneGraph) {
     const tileSize = 0.5;
     for (let i = -gridSize; i <= gridSize; i++) {
         for (let j = -gridSize; j <= gridSize; j++) {
+            let color;
+            if ((i + j) % 2 === 0) {
+                color = [0.1, 0.1, 0.1, 1.0];
+            } else {
+                color = [0.9, 0.9, 0.9, 1.0];
+            }
             let tileNode = {
                 name: "tile_" + i + "_" + j,
                 primitive: "CUBE",
+                "color": color,
                 transform: {
                     translation: [i * tileSize, -0.01, j * tileSize],
                     rotation: [0, 0, 0],
@@ -201,7 +209,7 @@ function setup(shaders, sceneGraph) {
         }
     }
 
-    gl.clearColor(0.3, 0.3, 0.3, 1.0);
+    gl.clearColor(0.53, 0.81, 0.92, 1.0);
     gl.enable(gl.DEPTH_TEST);   // Enables Z-buffer depth test
 
     CUBE.init(gl);
@@ -241,6 +249,11 @@ function setup(shaders, sceneGraph) {
         //no e primitaiva -> desenhar
         if (node.primitive) {
             const primitive = primitives[node.primitive];
+            let color = [1.0, 1.0, 1.0, 1.0];
+            if (node.color) {
+                color = node.color;
+            }
+            gl.uniform4fv(uColorLocation, color);
             uploadModelView();
             primitive.draw(gl, program, mode);
         }

@@ -21,6 +21,12 @@
     {
       "name": "base",
       "primitive": "CUBE",
+      "color": [
+        0.2,
+        0.5,
+        0.2,
+        1.0
+      ],
       "transform": {
         "translation": [
           0,
@@ -43,6 +49,12 @@
     {
       "name": "cabin",
       "primitive": "CUBE",
+      "color": [
+        0.2,
+        0.5,
+        0.2,
+        1.0
+      ],
       "transform": {
         "translation": [
           0,
@@ -64,6 +76,12 @@
         {
           "name": "cannon",
           "primitive": "CYLINDER",
+          "color": [
+            0.2,
+            0.5,
+            0.2,
+            1.0
+          ],
           "transform": {
             "translation": [
               0,
