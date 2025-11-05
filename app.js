@@ -59,7 +59,7 @@ function setup(shaders, sceneGraph) {
                 {
                     name: name + "_model",
                     primitive: "TORUS",
-                    "color": [0.1, 0.1, 0.1, 1.0],
+                    "color": [0.0, 0.0, 0.0, 1.0],
                     transform: {
                         translation: [0, 0, 0],
                         rotation: [0, 0, 0],
@@ -102,9 +102,9 @@ function setup(shaders, sceneGraph) {
         for (let j = -gridSize; j <= gridSize; j++) {
             let color;
             if ((i + j) % 2 === 0) {
-                color = [0.1, 0.1, 0.1, 1.0];
+                color = [0.0, 0.0, 0.0, 1.0];
             } else {
-                color = [0.9, 0.9, 0.9, 1.0];
+                color = [1.0, 1.0, 1.0, 1.0];
             }
             let tileNode = {
                 name: "tile_" + i + "_" + j,
