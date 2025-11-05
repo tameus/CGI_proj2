@@ -19,7 +19,7 @@ function setup(shaders, sceneGraph) {
     let mode = gl.LINES;
 
     let program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
-
+    let uColorLocation = gl.getUniformLocation(program, "u_color");
     let mProjection = ortho(-1 * aspect, aspect, -1, 1, 0.01, 100);
     let mView = lookAt([2, 1.2, 1], [0, 0.6, 0], [0, 1, 0]);
 
@@ -216,13 +216,6 @@ function setup(shaders, sceneGraph) {
         canvas.height = window.innerHeight;
 
         aspect = canvas.width / canvas.height;
-
-        /*gl.viewport(0, 0, canvas.width, canvas.height);
-        if (isPerspective) {
-            mProjection = perspective(60, aspect, 0.01, 100);
-        } else {
-            mProjection = ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, 0.01, 100);
-        }*/
 
     }
 
