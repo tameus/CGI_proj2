@@ -44,38 +44,10 @@
           0.8
         ]
       },
-      "children": []
-    },
-    {
-      "name": "cabin",
-      "primitive": "CUBE",
-      "color": [
-        0.2,
-        0.5,
-        0.2,
-        1.0
-      ],
-      "transform": {
-        "translation": [
-          0,
-          0.35,
-          0
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          0.3,
-          0.3,
-          0.3
-        ]
-      },
       "children": [
         {
-          "name": "cannon",
-          "primitive": "CYLINDER",
+          "name": "cabin",
+          "primitive": "CUBE",
           "color": [
             0.2,
             0.5,
@@ -85,21 +57,72 @@
           "transform": {
             "translation": [
               0,
-              0,
-              0.4
+              0.8,
+              0
             ],
             "rotation": [
-              90,
+              0,
               0,
               0
             ],
             "scale": [
-              0.1,
-              0.1,
+              0.4,
+              0.6,
               0.5
             ]
           },
-          "children": []
+          "children": [
+            {
+              "name": "cannon_connect",
+              "transform": {
+                "translation": [
+                  0,
+                  0,
+                  0.4
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "children": [
+                {
+                  "name": "cannon",
+                  "primitive": "CYLINDER",
+                  "color": [
+                    0.2,
+                    0.5,
+                    0.2,
+                    1.0
+                  ],
+                  "transform": {
+                    "translation": [
+                      0,
+                      0.0,
+                      0.5
+                    ],
+                    "rotation": [
+                      90,
+                      0,
+                      0
+                    ],
+                    "scale": [
+                      0.1,
+                      1,
+                      0.25
+                    ]
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     }

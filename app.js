@@ -1,5 +1,5 @@
 import { buildProgramFromSources, loadShadersFromURLS, loadJSONFile, setupWebGL } from "../../libs/utils.js";
-import { ortho, perspective, lookAt, flatten } from "../../libs/MV.js";
+import { ortho, perspective, lookAt, flatten, mat4 } from "../../libs/MV.js";
 import { modelView, loadMatrix, multRotationX, multRotationY, multRotationZ, multScale, multTranslation, popMatrix, pushMatrix } from "../../libs/stack.js";
 
 import * as CUBE from '../../libs/objects/cube.js';
@@ -16,7 +16,7 @@ function setup(shaders, sceneGraph) {
     let gl = setupWebGL(canvas);
 
     // Drawing mode (gl.LINES or gl.TRIANGLES)
-    let mode = gl.LINES;
+    let mode = gl.TRIANGLES;
 
     let program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
     let uColorLocation = gl.getUniformLocation(program, "u_color");
@@ -25,7 +25,15 @@ function setup(shaders, sceneGraph) {
 
     let zoom = 1.0;
     let isPerspective = false;
+    let isOblique = false;
     let isMultiView = false;
+
+    let tankTranslation = [0, 0, 0];
+    let tankRotationY = 0;
+
+    let oblAlpha = 45;
+    let oblF = 0.5;
+
     const mViewFront = lookAt([0, 0.6, 2], [0, 0.6, 0], [0, 1, 0]);
     const mViewTop = lookAt([0, 2, 0], [0, 0.6, 0], [0, 0, -1]);
     const mViewLeft = lookAt([-2, 0.6, 0], [0, 0.6, 0], [0, 1, 0]);
@@ -73,7 +81,7 @@ function setup(shaders, sceneGraph) {
     }
 
     const cabinNode = findNode("cabin", sceneGraph);
-    const cannonNode = findNode("cannon", sceneGraph);
+    const cannonConnectNode = findNode("cannon_connect", sceneGraph);
     const baseNode = findNode("base", sceneGraph);
     let wheelNodes = [];
     let x_left = -0.45;
@@ -102,9 +110,9 @@ function setup(shaders, sceneGraph) {
         for (let j = -gridSize; j <= gridSize; j++) {
             let color;
             if ((i + j) % 2 === 0) {
-                color = [0.0, 0.0, 0.0, 1.0];
+                color = [0.4, 0.4, 0.4, 1.0];
             } else {
-                color = [1.0, 1.0, 1.0, 1.0];
+                color = [0.8, 0.8, 0.7, 1.0];
             }
             let tileNode = {
                 name: "tile_" + i + "_" + j,
@@ -113,7 +121,7 @@ function setup(shaders, sceneGraph) {
                 transform: {
                     translation: [i * tileSize, -0.01, j * tileSize],
                     rotation: [0, 0, 0],
-                    scale: [tileSize * 0.95, 0.01, tileSize * 0.95]
+                    scale: [tileSize * 1, 0.01, tileSize * 1]
                 },
                 children: []
             };
@@ -156,6 +164,9 @@ function setup(shaders, sceneGraph) {
                 mView = mViewOblique;
                 isMultiView = false;
                 break;
+            case '8':
+                isOblique = !isOblique;
+                break;
             case '9':
                 isPerspective = !isPerspective;
                 break;
@@ -175,22 +186,36 @@ function setup(shaders, sceneGraph) {
                 ag = Math.max(0, ag - 0.005);
                 break;
             case 'q':
+                const forwardRotation = (tankRotationY * Math.PI) / 180;
+                const step = 0.005;
+
+                tankTranslation[2] += step * Math.cos(forwardRotation);
+                tankTranslation[0] += step * Math.sin(forwardRotation);
+
+
                 for (let node of wheelNodes) {
                     node.transform.rotation[1] += 1;
                 }
                 break;
             case 'e':
+
+                const backRotation = (tankRotationY * Math.PI) / 180;
+                const step2 = 0.005;
+
+                tankTranslation[2] -= step2 * Math.cos(backRotation);
+                tankTranslation[0] -= step2 * Math.sin(backRotation);
+
                 for (let node of wheelNodes) {
                     node.transform.rotation[1] -= 1;
                 }
                 break;
             case 'w':
                 //roda canhao para cima (eixo X)
-                cannonNode.transform.rotation[0] = Math.min(110, cannonNode.transform.rotation[0] + 1);
+                cannonConnectNode.transform.rotation[0] = Math.min(20, cannonConnectNode.transform.rotation[0] + 1);
                 break;
             case 's':
                 //roda canhao para baixo (eixo X)
-                cannonNode.transform.rotation[0] = Math.max(70, cannonNode.transform.rotation[0] - 1);
+                cannonConnectNode.transform.rotation[0] = Math.max(-50, cannonConnectNode.transform.rotation[0] - 1);
                 break;
             case 'a':
                 //roda cabine para esquerda (eixo Y)
@@ -248,8 +273,19 @@ function setup(shaders, sceneGraph) {
         multScale(s);
         //no e primitaiva -> desenhar
         if (node.primitive) {
+
+
+
             const primitive = primitives[node.primitive];
             let color = [1.0, 1.0, 1.0, 1.0];
+
+            if (mode === gl.TRIANGLES) {
+                gl.enable(gl.POLYGON_OFFSET_FILL);
+                gl.polygonOffset(1.0, 1.0);
+                gl.uniform4fv(uColorLocation, [0.2, 0.2, 0.2, 1.0]);
+                uploadModelView();
+                primitive.draw(gl, program, gl.LINES);
+            }
             if (node.color) {
                 color = node.color;
             }
@@ -281,12 +317,38 @@ function setup(shaders, sceneGraph) {
         loadMatrix(viewMatrix);
         traverse(sceneGraph);
     }
-    function setAndUploadProjection(currentAspect) {
+    function setAndUploadProjection(currentAspect, isView4) {
+        const near = 0.01;
+        const far = 100;
+
+        const right = currentAspect * zoom;
+        const left = -currentAspect * zoom;
+        const top = zoom;
+        const bottom = -zoom;
+
         //fazer a projecao
         if (isPerspective) {
-            mProjection = perspective(60, currentAspect, 0.01, 100);
+            mProjection = perspective(60, currentAspect, near, far);
         } else {
-            mProjection = ortho(-currentAspect * zoom, currentAspect * zoom, -zoom, zoom, 0.01, 100);
+            mProjection = ortho(left, right, bottom, top, near, far);
+
+            if (isView4 && isOblique) {
+
+                const rad = (Math.PI / 180) * oblAlpha;
+
+                const cosA = Math.cos(rad);
+                const sinA = Math.sin(rad);
+
+                // A Matriz de Cisalhamento que simula o Oblíquo (aplicada ao sistema de coordenadas 3D)
+                const shearMatrix = mat4.fromValues(
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    -oblF * cosA, -oblF * sinA, 1, 0,
+                    0, 0, 0, 1)
+                    ;
+
+                mProjection = mat4.multiply(mProjection, mProjection, shearMatrix);
+            }
         }
         uploadProjection();
     }
@@ -295,6 +357,31 @@ function setup(shaders, sceneGraph) {
         window.requestAnimationFrame(render);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.useProgram(program);
+
+        if (Math.abs(ag) > 0.00001) {
+
+            tankRotationY += (cabinNode.transform.rotation[1] - tankRotationY) * 0.05;
+        }
+
+        baseNode.transform.rotation[1] = tankRotationY;
+
+        const radY = (tankRotationY * Math.PI) / 180;
+        const dz = ag * Math.cos(radY); // Movimento ao longo do eixo Z
+        const dx = ag * Math.sin(radY); // Movimento ao longo do eixo X
+
+        tankTranslation[2] += dz;
+        tankTranslation[0] += dx;
+
+        // 4. Aplicar a Translação Global à base do modelo
+        baseNode.transform.translation[0] = tankTranslation[0];
+        baseNode.transform.translation[2] = tankTranslation[2];
+
+        // 5. Rotação das Rodas (simulação de rolamento)
+        // O fator de rotação depende da velocidade (ag) para simular o movimento
+        const rotationFactor = -ag * 100; // Multiplicador para rotação ser visível
+        for (let node of wheelNodes) {
+            node.transform.rotation[1] += rotationFactor;
+        }
 
         const w = canvas.width;
         const h = canvas.height;
@@ -307,27 +394,27 @@ function setup(shaders, sceneGraph) {
 
             //frontal (canto inferior esquerdo)
             gl.viewport(0, 0, w2, h2);
-            setAndUploadProjection(viewportAspect);
+            setAndUploadProjection(viewportAspect, false);
             drawScene(mViewFront);
 
             //cima (canto superior esquerdo)
             gl.viewport(0, h2, w2, h2);
-            setAndUploadProjection(viewportAspect);
+            setAndUploadProjection(viewportAspect, false);
             drawScene(mViewTop);
 
             //esquerda (canto superior direito)
             gl.viewport(w2, h2, w2, h2);
-            setAndUploadProjection(viewportAspect);
+            setAndUploadProjection(viewportAspect, false);
             drawScene(mViewLeft);
 
             //obliqua (canto inferior direito)
             gl.viewport(w2, 0, w2, h2);
-            setAndUploadProjection(viewportAspect);
+            setAndUploadProjection(viewportAspect, true);
             drawScene(mViewOblique);
         } else {
             //vista unica (ecra inteiro)
             gl.viewport(0, 0, w, h);
-            setAndUploadProjection(aspect);
+            setAndUploadProjection(aspect, false);
             drawScene(mView);
         }
     }
