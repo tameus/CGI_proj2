@@ -4,13 +4,153 @@
 <head>
     <title>Projeto 2</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="./app.js"></script>
 </head>
 
 <body>
-    <canvas id="gl-canvas" width="128" height="128">
-        Oops! Something went wrong!
-    </canvas>
+    <script type="module" src="./app.js"></script>
+    <div class="container">
+        <canvas id="gl-canvas" width="512" height="512"></canvas>
+        
+
+            <div id="game1" style="display: none;">
+                
+                    <div id="separator"></div>
+                        <p> Tempo Restante: <span id = "timer1">0.0</span> s</p>
+                        <p> Vacas por atropelar: <span id = "cows1">0</span></p>
+                
+            </div>
+            
+            <div id="game2">
+                <div id="separator"></div>
+                    <p> Tempo: <span id = "timer2">0.0</span> s</p>
+                    <p> Recorde: <span id = "record2">0</span></p>
+
+            </div>
+
+            <div id="sens">
+                <div id="separator"></div>
+                    <p> SENSIBILIDADE:  <span id = "sens_state">DESATIVADA</p>
+            </div>
+            
+
+        </div>
+        <div id="lower-container">
+            <div>Keys:</div>
+            <div id="status-container">
+                <div id="status-box">
+                    <div class="separator"></div>
+                    <table>
+                        <tr>
+                            <td class="key">'h' - Toggle this panel</td>
+                            <td id="H"> </td>
+                        </tr>
+                        <tr>
+                            <td class="key">'0': Toggle 1/4 views</td>
+                            <td id="0"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'1': Front view</td>
+                            <td id="1"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'2': Left view</td>
+                            <td id="2"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'3': Top view</td>
+                            <td id="3"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'4': 4th view</td>
+                            <td id="4"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'8': Toggle 4th view (Oblique VS Axonometric)</td>
+                            <td id="8"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'9': Parallel VS Perspective</td>
+                            <td id="9"></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="key">' ': Toggle wireframe/solid</td>
+                            <td id="space"></td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="key">'q': Move forward</td>
+                            <td id="MoveF"></td>
+                        </tr>   
+                        <tr>
+                            <td class="key">'e': Move backward</td>
+                            <td id="MoveBack"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'w': Raise cannon</td>
+                            <td id="RaiseC"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'s': Lower cannon</td>
+                            <td id="LowerC"></td>
+                        </tr>
+                         <tr>
+                            <td class="key">'a': Rotate cabin ccw</td>
+                            <td id="RotCCW"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'d': Rotate cabin cw</td>
+                            <td id="RotCW"></td>
+
+                        </tr> 
+                        <tr>
+                            <td class="key">'z': Shoot projectile</td>
+                            <td id="Shoot"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'v': Toggle rabbit projectile</td>
+                            <td id="RabbitP"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'m': MiniGame 1</td>
+                            <td id="MG1"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'n': MiniGame 2</td>
+                            <td id="MG2"></td>
+                        </tr> 
+                        </tr>
+                         <tr>
+                            <td class="key">'b': Toggle SENSIBLE MODE</td>
+                            <td id="SensM"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'r': Reset view params</td>
+                            <td id="Reset"></td>
+                        </tr> 
+                        <tr>
+                            <td class="key">'&larr;': Increase theta </td>
+                            <td id="IT"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'&rarr;': Decrease theta</td>
+                            <td id="DT"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'&uarr;': Increase gamma </td>
+                            <td id="IG"></td>
+                        </tr>
+                        <tr>
+                            <td class="key">'&darr;': Descrease gamma</td>
+                            <td id="DG"></td>
+                        </tr>                   
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </body>
 
 </html>
