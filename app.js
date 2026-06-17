@@ -1,13 +1,13 @@
-import { buildProgramFromSources, loadShadersFromURLS, loadJSONFile, setupWebGL } from "../../libs/utils.js";
-import { ortho, perspective, lookAt, flatten, mat4, vec4, mult, inverse } from "../../libs/MV.js";
-import { modelView, loadMatrix, multRotationX, multRotationY, multRotationZ, multScale, multTranslation, popMatrix, pushMatrix } from "../../libs/stack.js";
+import { buildProgramFromSources, loadShadersFromURLS, loadJSONFile, setupWebGL } from "./libs/utils.js";
+import { ortho, perspective, lookAt, flatten, mat4, vec4, mult, inverse } from "./libs/MV.js";
+import { modelView, loadMatrix, multRotationX, multRotationY, multRotationZ, multScale, multTranslation, popMatrix, pushMatrix } from "./libs/stack.js";
 
-import * as CUBE from '../../libs/objects/cube.js';
-import * as CYLINDER from '../../libs/objects/cylinder.js';
-import * as TORUS from '../../libs/objects/torus.js';
-import * as SPHERE from '../../libs/objects/sphere.js';
-import * as BUNNY from '../../libs/objects/bunny.js';
-import * as COW from '../../libs/objects/cow.js';
+import * as CUBE from './libs/objects/cube.js';
+import * as CYLINDER from './libs/objects/cylinder.js';
+import * as TORUS from './libs/objects/torus.js';
+import * as SPHERE from './libs/objects/sphere.js';
+import * as BUNNY from './libs/objects/bunny.js';
+import * as COW from './libs/objects/cow.js';
 
 function setup(shaders, sceneGraph) {
     let canvas = document.getElementById("gl-canvas");
